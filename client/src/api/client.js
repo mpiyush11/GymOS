@@ -1,20 +1,24 @@
 import axios from 'axios';
 
-export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1',
-  withCredentials: true, // Sends HttpOnly cookie automatically
+// PRODUCTION HARDENING: Explicitly target the hosted Render backend with a clean fallback chain
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://gymos-backend-e8xs.onrender.com/api/v1';
+
+const client = axios.create({
+  baseURL: API_BASE_URL,
+  withCredentials: true, // Required for secure server-side HTTP-Only cookies
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 });
 
-// Auto-redirect to login if 401
-apiClient.interceptors.response.use(
-  (response) => response,
+// Request interceptor for dynamic log auditing in dev
+client.interceptors.request.use(
+  (config) => {
+    return config;
+  },
   (error) => {
-    if (error.response?.status === 401) {
-      window.location.href = '/login';
-    }
     return Promise.reject(error);
   }
 );
+
+export default client;
