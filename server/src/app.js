@@ -8,15 +8,23 @@ const app = express();
 // Security HTTP headers
 app.use(helmet());
 
-// 100% PRODUCTION CORS MATRIX - Hardcoded locked allow matrix
+// 100% PRODUCTION CORS MATRIX - Dynamic Regex to accept ALL Vercel generated links
 app.use(cors({
-    origin: [
-        'https://gymos-neon.vercel.app', 
-        'http://localhost:5173'
-    ],
+    origin: function (origin, callback) {
+        // Allow if no origin (like mobile apps, curl) or if it matches local/Vercel pattern
+        if (!origin || 
+            origin === 'http://localhost:5173' || 
+            origin.endsWith('.vercel.app') || 
+            /https:\/\/gymos-.*-mpiyush11s-projects\.vercel\.app/.test(origin)
+        ) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS Matrix'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Cookie']
 }));
 
 // Body parsers with strict size limits
