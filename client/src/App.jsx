@@ -28,7 +28,7 @@ const ProtectedRoute = ({ children, requireRole }) => {
               <span className="text-xl font-bold text-blue-600">GYMOS</span>
               
               <div className="hidden md:flex space-x-4">
-                {user.role === 'ADMIN' ? (
+                {user.role === 'SUPER_ADMIN' ? (
                   <Link to="/admin" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">Platform Admin</Link>
                 ) : (
                   <>
@@ -78,7 +78,7 @@ function AppRoutes() {
       <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
       
       {/* Platform Admin Route */}
-      <Route path="/admin" element={<ProtectedRoute requireRole="ADMIN"><AdminGyms /></ProtectedRoute>} />
+      <Route path="/admin" element={<ProtectedRoute requireRole="SUPER_ADMIN"><AdminGyms /></ProtectedRoute>} />
     </Routes>
   );
 }
