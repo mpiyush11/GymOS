@@ -11,9 +11,8 @@ const loginLimiter = rateLimit({
     max: 5, // Limit each IP + Email to 5 login requests per window
     skipSuccessfulRequests: true, // HARDENING: Successful logins do not burn quota
     
-    // PRODUCTION FIX: Explicitly handle proxy and IPv6 tracking safely for Render
+    // PRODUCTION FIX: Handle proxy and IPv6 tracking safely for Render
     keyGenerator: (req) => {
-        // Fallback checks to extract clean client IP behind Render's load balancer
         const clientIp = req.headers['x-forwarded-for'] 
             ? req.headers['x-forwarded-for'].split(',')[0].trim() 
             : req.ip;
@@ -26,7 +25,7 @@ const loginLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     
-    // BYPASS VALIDATION: Force-bypasses the internal helper check so cloud deployment runs flawless
+    // BYPASS VALIDATION: Force-bypasses the internal helper check for cloud deploy
     validate: { xForwardedForHeader: false }, 
 });
 
